@@ -1,0 +1,66 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hsms-db
+    environment:
+      POSTGRES_USER: hsms
+      POSTGRES_PASSWORD: hsms
+      POSTGRES_DB: hsms
+    ports:
+      # Mapped to 5433 on the host to avoid clashing with any locally installed Postgres.
+      - "5433:5432"
+    volumes:
+      - hsms_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hsms -d hsms"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Express API — pushes the Prisma schema and seeds demo data (if empty) on startup.
+  api:
+    build: ./server
+    container_name: hsms-api
+    environment:
+      DATABASE_URL: postgresql://hsms:hsms@db:5432/hsms
+      PORT: 4000
+      JWT_SECRET: dev-secret-do-not-use-in-prod
+      JWT_EXPIRES_IN: 12h
+      UPLOAD_DIR: uploads
+      WHATSAPP_PROVIDER: mock
+      PAYMENT_PROVIDER: mock
+      MOCK_PAYMENT_DELAY_MS: 1500
+      MOCK_PAYMENT_FAIL_RATE: 0
+    ports:
+      - "4000:4000"
+    volumes:
+      - hsms_uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # React app served by nginx, which proxies /api to the api container.
+  web:
+    build: ./client
+    container_name: hsms-web
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+  # Optional DB browser. Start with: docker compose --profile tools up -d
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: hsms-pgadmin
+    profiles: ["tools"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@demo.pk
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  hsms_pgdata:
+  hsms_uploads:

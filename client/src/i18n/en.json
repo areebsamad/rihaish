@@ -1,0 +1,86 @@
+{
+  "app": { "title": "Rihaish" },
+  "nav": {
+    "dashboard": "Dashboard",
+    "society": "Society & Residents",
+    "billing": "Billing & Payments",
+    "visitors": "Visitors",
+    "complaints": "Complaints",
+    "announcements": "Announcements",
+    "inbox": "WhatsApp Inbox",
+    "documents": "Documents",
+    "audit": "Audit Log",
+    "guard": "Guard Interface",
+    "simulator": "WhatsApp Simulator",
+    "logout": "Logout"
+  },
+  "common": {
+    "search": "Search",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "actions": "Actions",
+    "status": "Status",
+    "all": "All",
+    "approve": "Approve",
+    "reject": "Reject",
+    "amount": "Amount",
+    "date": "Date",
+    "name": "Name",
+    "phone": "Phone",
+    "plot": "Plot",
+    "resident": "Resident",
+    "exportCsv": "Export CSV",
+    "exportPdf": "Export PDF",
+    "loading": "Loading...",
+    "noData": "No records found"
+  },
+  "dashboard": {
+    "collectionRate": "Collection Rate (this month)",
+    "overdueAmount": "Overdue Amount",
+    "openComplaints": "Open Complaints",
+    "visitorsToday": "Visitors Today",
+    "collections": "Collections — last 6 months",
+    "complaintsByCategory": "Complaints by category",
+    "billsByStatus": "Bills by status"
+  },
+  "billing": {
+    "generate": "Generate Bills",
+    "monthlyRun": "Simulate Monthly Run",
+    "recordPayment": "Record Payment",
+    "sendReminder": "Send WhatsApp Reminder",
+    "period": "Period",
+    "dueDate": "Due Date"
+  },
+  "visitors": {
+    "newVisitor": "New Visitor",
+    "viewPass": "View Pass",
+    "expected": "Expected",
+    "passCode": "Pass Code"
+  },
+  "complaints": {
+    "open": "Open",
+    "inProgress": "In Progress",
+    "resolved": "Resolved",
+    "closed": "Closed",
+    "assign": "Assign",
+    "addUpdate": "Add Update",
+    "category": "Category",
+    "ticket": "Ticket"
+  },
+  "announcements": {
+    "compose": "Compose Announcement",
+    "broadcast": "Broadcast",
+    "acks": "Acknowledgments",
+    "targetAll": "All residents",
+    "targetPlots": "Specific plots"
+  },
+  "login": {
+    "title": "Sign in to your society dashboard",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In"
+  }
+}

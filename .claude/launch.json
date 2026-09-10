@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docker-demo",
+      "runtimeExecutable": "docker",
+      "runtimeArgs": ["compose", "up", "web"],
+      "port": 5173
+    },
+    {
+      "name": "client",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "client",
+      "port": 5173
+    }
+  ]
+}

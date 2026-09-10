@@ -1,0 +1,86 @@
+{
+  "app": { "title": "رہائش" },
+  "nav": {
+    "dashboard": "ڈیش بورڈ",
+    "society": "سوسائٹی اور رہائشی",
+    "billing": "بلنگ اور ادائیگیاں",
+    "visitors": "مہمان",
+    "complaints": "شکایات",
+    "announcements": "اعلانات",
+    "inbox": "واٹس ایپ ان باکس",
+    "documents": "دستاویزات",
+    "audit": "آڈٹ لاگ",
+    "guard": "گارڈ انٹرفیس",
+    "simulator": "واٹس ایپ سمیلیٹر",
+    "logout": "لاگ آؤٹ"
+  },
+  "common": {
+    "search": "تلاش",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ",
+    "delete": "حذف کریں",
+    "edit": "ترمیم",
+    "add": "شامل کریں",
+    "actions": "کارروائیاں",
+    "status": "حالت",
+    "all": "تمام",
+    "approve": "منظور",
+    "reject": "مسترد",
+    "amount": "رقم",
+    "date": "تاریخ",
+    "name": "نام",
+    "phone": "فون",
+    "plot": "پلاٹ",
+    "resident": "رہائشی",
+    "exportCsv": "CSV ایکسپورٹ",
+    "exportPdf": "PDF ایکسپورٹ",
+    "loading": "لوڈ ہو رہا ہے...",
+    "noData": "کوئی ریکارڈ نہیں ملا"
+  },
+  "dashboard": {
+    "collectionRate": "وصولی کی شرح (اس ماہ)",
+    "overdueAmount": "واجب الادا رقم",
+    "openComplaints": "زیر التوا شکایات",
+    "visitorsToday": "آج کے مہمان",
+    "collections": "وصولیاں — گزشتہ 6 ماہ",
+    "complaintsByCategory": "شکایات بلحاظ قسم",
+    "billsByStatus": "بل بلحاظ حالت"
+  },
+  "billing": {
+    "generate": "بل بنائیں",
+    "monthlyRun": "ماہانہ رن چلائیں",
+    "recordPayment": "ادائیگی درج کریں",
+    "sendReminder": "واٹس ایپ یاد دہانی بھیجیں",
+    "period": "مدت",
+    "dueDate": "آخری تاریخ"
+  },
+  "visitors": {
+    "newVisitor": "نیا مہمان",
+    "viewPass": "پاس دیکھیں",
+    "expected": "متوقع",
+    "passCode": "پاس کوڈ"
+  },
+  "complaints": {
+    "open": "کھلی",
+    "inProgress": "زیر عمل",
+    "resolved": "حل شدہ",
+    "closed": "بند",
+    "assign": "تفویض کریں",
+    "addUpdate": "اپ ڈیٹ شامل کریں",
+    "category": "قسم",
+    "ticket": "ٹکٹ"
+  },
+  "announcements": {
+    "compose": "اعلان لکھیں",
+    "broadcast": "نشر کریں",
+    "acks": "تصدیقات",
+    "targetAll": "تمام رہائشی",
+    "targetPlots": "مخصوص پلاٹس"
+  },
+  "login": {
+    "title": "اپنے سوسائٹی ڈیش بورڈ میں سائن ان کریں",
+    "email": "ای میل",
+    "password": "پاس ورڈ",
+    "signIn": "سائن ان"
+  }
+}

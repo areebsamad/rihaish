@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TREASURER
+  GUARD
+}
+
+enum BillStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum PaymentStatus {
+  INITIATED
+  SUCCESS
+  FAILED
+}
+
+enum PassStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  USED
+  EXPIRED
+}
+
+enum ComplaintStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ComplaintCategory {
+  PLUMBING
+  ELECTRICITY
+  SECURITY
+  CLEANLINESS
+  NOISE
+  OTHER
+}
+
+enum AnnouncementTarget {
+  ALL
+  PLOTS
+}
+
+enum WaDirection {
+  INBOUND
+  OUTBOUND
+}
+
+model Society {
+  id            String         @id @default(cuid())
+  name          String
+  city          String
+  address       String
+  createdAt     DateTime       @default(now())
+  plots         Plot[]
+  users         User[]
+  residents     Resident[]
+  announcements Announcement[]
+  documents     Document[]
+  visitors      Visitor[]
+  complaints    Complaint[]
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          Role
+  // null societyId = super-admin with access to all societies
+  societyId     String?
+  society       Society?       @relation(fields: [societyId], references: [id])
+  createdAt     DateTime       @default(now())
+  assignedComplaints Complaint[] @relation("ComplaintAssignee")
+  announcements Announcement[]
+  documents     Document[]
+}
+
+model Resident {
+  id         String    @id @default(cuid())
+  societyId  String
+  society    Society   @relation(fields: [societyId], references: [id])
+  name       String
+  phone      String // contact phone (923xx...)
+  cnicLast4  String // last 4 digits of CNIC, used for WhatsApp verification
+  // WhatsApp number linked via the registration flow (may equal phone)
+  waPhone    String?   @unique
+  createdAt  DateTime  @default(now())
+  plots      Plot[]
+  visitors   Visitor[]
+  complaints Complaint[]
+  acks       AnnouncementAck[]
+}
+
+model Plot {
+  id         String    @id @default(cuid())
+  societyId  String
+  society    Society   @relation(fields: [societyId], references: [id])
+  number     String // e.g. "A-101"
+  block      String?
+  type       String    @default("HOUSE") // HOUSE | FLAT | SHOP
+  residentId String?
+  resident   Resident? @relation(fields: [residentId], references: [id])
+  bills      Bill[]
+  visitors   Visitor[]
+
+  @@unique([societyId, number])
+}
+
+model Bill {
+  id          String     @id @default(cuid())
+  plotId      String
+  plot        Plot       @relation(fields: [plotId], references: [id])
+  month       Int // 1-12
+  year        Int
+  description String     @default("Monthly maintenance")
+  amount      Int // PKR
+  dueDate     DateTime
+  status      BillStatus @default(PENDING)
+  createdAt   DateTime   @default(now())
+  payments    Payment[]
+
+  @@unique([plotId, month, year])
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  billId    String
+  bill      Bill          @relation(fields: [billId], references: [id])
+  amount    Int
+  method    String // CASH | BANK_TRANSFER | MOCK_WALLET | EASYPAISA | JAZZCASH
+  status    PaymentStatus @default(INITIATED)
+  reference String?
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+}
+
+model Visitor {
+  id         String       @id @default(cuid())
+  societyId  String
+  society    Society      @relation(fields: [societyId], references: [id])
+  plotId     String
+  plot       Plot         @relation(fields: [plotId], references: [id])
+  residentId String?
+  resident   Resident?    @relation(fields: [residentId], references: [id])
+  name       String
+  phone      String?
+  purpose    String?
+  expectedAt DateTime
+  createdVia String       @default("ADMIN") // ADMIN | WHATSAPP
+  createdAt  DateTime     @default(now())
+  pass       VisitorPass?
+}
+
+model VisitorPass {
+  id           String     @id @default(cuid())
+  visitorId    String     @unique
+  visitor      Visitor    @relation(fields: [visitorId], references: [id])
+  code         String     @unique // short code embedded in the QR
+  qrDataUrl    String? // PNG data-URL of the QR code
+  status       PassStatus @default(PENDING)
+  approvedById String?
+  expiresAt    DateTime
+  entryAt      DateTime?
+  exitAt       DateTime?
+  createdAt    DateTime   @default(now())
+}
+
+model Complaint {
+  id          String            @id @default(cuid())
+  ticketNo    String            @unique // e.g. C-1001
+  societyId   String
+  society     Society           @relation(fields: [societyId], references: [id])
+  residentId  String?
+  resident    Resident?         @relation(fields: [residentId], references: [id])
+  plotNumber  String?
+  category    ComplaintCategory
+  description String
+  status      ComplaintStatus   @default(OPEN)
+  assigneeId  String?
+  assignee    User?             @relation("ComplaintAssignee", fields: [assigneeId], references: [id])
+  source      String            @default("ADMIN") // ADMIN | WHATSAPP
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  updates     ComplaintUpdate[]
+}
+
+model ComplaintUpdate {
+  id          String    @id @default(cuid())
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+  authorName  String // user name, resident name or "System"
+  note        String
+  statusFrom  ComplaintStatus?
+  statusTo    ComplaintStatus?
+  createdAt   DateTime  @default(now())
+}
+
+model Announcement {
+  id          String             @id @default(cuid())
+  societyId   String
+  society     Society            @relation(fields: [societyId], references: [id])
+  title       String
+  body        String
+  target      AnnouncementTarget @default(ALL)
+  plotNumbers String[] // used when target = PLOTS
+  createdById String?
+  createdBy   User?              @relation(fields: [createdById], references: [id])
+  createdAt   DateTime           @default(now())
+  acks        AnnouncementAck[]
+}
+
+model AnnouncementAck {
+  id             String       @id @default(cuid())
+  announcementId String
+  announcement   Announcement @relation(fields: [announcementId], references: [id])
+  residentId     String
+  resident       Resident     @relation(fields: [residentId], references: [id])
+  ackAt          DateTime     @default(now())
+
+  @@unique([announcementId, residentId])
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  societyId    String
+  society      Society  @relation(fields: [societyId], references: [id])
+  title        String
+  filename     String // stored name on disk (uploads/); swap-in point for S3 keys
+  originalName String
+  mimeType     String
+  size         Int
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  societyId String?
+  actorType String // USER | RESIDENT | SYSTEM
+  actorId   String?
+  actorName String
+  action    String // e.g. BILL_PAID, VISITOR_APPROVED
+  entity    String // e.g. Bill, VisitorPass
+  entityId  String?
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+}
+
+// --- WhatsApp simulator / conversation state (provider-agnostic) ---
+
+model WaConversation {
+  id         String      @id @default(cuid())
+  phone      String      @unique
+  residentId String?
+  state      String      @default("AWAIT_PLOT")
+  context    Json?
+  escalated  Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  messages   WaMessage[]
+}
+
+model WaMessage {
+  id             String         @id @default(cuid())
+  conversationId String
+  conversation   WaConversation @relation(fields: [conversationId], references: [id])
+  direction      WaDirection
+  type           String         @default("text") // text | buttons | image
+  body           String
+  buttons        Json? // [{id, label}]
+  imageDataUrl   String?
+  createdAt      DateTime       @default(now())
+}
